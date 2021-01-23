@@ -15,6 +15,7 @@ router.post('/login', usersController.doLogin);
 
 // Iteration 2: logout route
 
+
 // Iteration 3: authenticate users path
 router.get('/users', usersController.list);
 

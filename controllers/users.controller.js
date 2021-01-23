@@ -27,6 +27,7 @@ module.exports.doRegister = (req, res, next) => {
     })
     .catch(error => {
       if (error instanceof mongoose.Error.ValidationError) {
+        console.log(error instanceof mongoose.Error.ValidationError)
         renderWithErrors(error.errors);
       } else {
         next(error);
@@ -39,7 +40,28 @@ module.exports.login = (req, res, next) => {
 };
 
 module.exports.doLogin = (req, res, next) => {
+
   // Iteration 2: login user
+
+  User.findOne({email: req.body.email})
+    .then(user => {
+      if (user){
+        User.checkPassword(req.body.password)
+          .then(() => {
+            req.session.currentUser = user.id;
+            res.redirect('/')
+          })
+          .catch()
+      } else {
+        res.render(('users/login'), {
+          'email': req.body.email,
+          'errors.email': "Email or password do not match",
+          'errors.password': "Email or password do not match"
+        })
+      }
+    })
+    .catch(next)
+
   // Iteration 4: clean this method and login the user with passport
 };
 

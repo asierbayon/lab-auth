@@ -29,19 +29,20 @@ const userSchema = new Schema(
 );
 
 userSchema.pre('save', function (next) {
-  // Iteration 1: install bcrypt and hash password if necessary
-  bcrypt.hash(this.password, 10)
-    .then(hash => {
-      this.password = hash;
+  if (this.isModified('password')){
+    bcrypt.hash(this.password, 10)
+      .then(hash => {
+        this.password = hash;
+        next();
+      })
+      .catch(next)
+    } else {
       next();
-    })
-    .catch(next);
+    }
 });
 
-
 userSchema.methods.checkPassword = function (passwordToCheck) {
-// Iteration 2: compare passwords with bcrypt
-  return Promise.reject(false);
+  return bcrypt.compare(passwordToCheck, this.password) 
 };
 
 const User = mongoose.model('User', userSchema);
