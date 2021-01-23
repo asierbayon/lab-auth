@@ -16,6 +16,22 @@ module.exports.doRegister = (req, res, next) => {
   }
 
   // Iteration 1: register and validate user
+  User.findOne({ name: req.body.name })
+    .then(user => {
+      if (user) {
+        renderWithErrors({ name: 'Name already exists.'})
+      } else {
+        return User.create(req.body) // Por qué return?
+          .then(() => res.redirect('/'));
+      }
+    })
+    .catch(error => {
+      if (error instanceof mongoose.Error.ValidationError) {
+        renderWithErrors(error.errors);
+      } else {
+        next(error);
+      }
+    })
 };
 
 module.exports.login = (req, res, next) => {
